@@ -5,12 +5,10 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sentence_transformers import SentenceTransformer, util
 from tqdm import tqdm
-import torch
 
 class RemovePost():
     def __init__(self):
         print("init")
-        print(torch.__version__)
 
     # STEP 1. HTML 태그 제거
     def clean_html(self, text):

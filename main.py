@@ -23,7 +23,7 @@ def Search(date):
     return df
 
 def Crawling(df, date):
-    sel = Selenium_Crawling.DetailCrawling()
+    sel = Selenium_Crawler.DetailCrawling()
     # df = df[:10]  # test
 
     for idx, row in tqdm(df.iterrows(), total=df.shape[0]):
@@ -56,13 +56,13 @@ def Run_Crawler():
     date = pd.Timestamp.today().date()
     print(date)
 
-    # result_df = Search(date)
-    # result_df = Crawling(result_df, date)
+    result_df = Search(date)
+    result_df = Crawling(result_df, date)
 
     # 중복 제거 테스트
-    result_df = pd.read_csv(f"./Data/result_{date}.csv", encoding='utf-8-sig')
+    # result_df = pd.read_csv(f"./Data/result_{date}.csv", encoding='utf-8-sig')
 
-    Remove_duplicate(result_df)
+    # Remove_duplicate(result_df)
 
 
 # Press the green button in the gutter to run the script.

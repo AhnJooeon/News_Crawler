@@ -3,6 +3,7 @@ import requests
 import re
 from bs4 import BeautifulSoup
 from datetime import timedelta
+import ssl
 
 class NaverSearch():
     def __init__(self):
@@ -23,7 +24,7 @@ class NaverSearch():
         }
 
         total_results = []  # To store all search results
-        display = 10  # Number of results per request
+        display = 5  # Number of results per request
         start = page  # Start index for pagination 1, 11, 21, ... (page num)
         flag = 0
 
@@ -32,10 +33,11 @@ class NaverSearch():
                 'query': query,
                 'display': display,
                 'start': start,
-                'sort': 'sim',  # sort option(date, sim)
+                'sort': 'date',  # sort option(date, sim)
             }
             try:
                 response = requests.get(url, headers=headers, params=params)
+                print(f"response : {response}")
             except Exception as ex:
                 print(ex)
 
