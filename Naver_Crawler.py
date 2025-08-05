@@ -1,4 +1,5 @@
 import pandas as pd
+import urllib.request
 import requests
 import re
 from bs4 import BeautifulSoup
@@ -28,20 +29,17 @@ class NaverSearch():
         flag = 0
 
         while True:
-            params = {
-                'query': query,
-                'display': display,
-                'start': start,
-                'sort': 'sim',  # sort option(date, sim)
-            }
-            try:
-                response = requests.get(url, headers=headers, params=params)
-            except Exception as ex:
-                print(ex)
+            encText = urllib.parse.quote(query)
+            url = "https://openapi.naver.com/v1/search/blog?query=" + encText # JSON 결과
+            request = urllib.request.Request(url)
+            request.add_header("X-Naver-Client-Id",client_id)
+            request.add_header("X-Naver-Client-Secret",client_secret)
+            response = urllib.request.urlopen(request)
+            rescode = response.getcode()
 
-            if response.status_code == 200:
-                data = response.json()
-                items = data['items']
+            if rescode == 200:
+                items = response.read()
+                # items = data['items']
 
                 if not items:  # No more results
                     flag += 1
@@ -56,7 +54,7 @@ class NaverSearch():
                 flag += 1
 
             # Break Point
-            if flag > 10:
+            if flag > 1:
                 print("# No more results")
                 break
 
@@ -70,11 +68,11 @@ class NaverSearch():
         df['postDate'] = df['postDate'].dt.strftime("%Y-%m-%d %H:%M:%S")  # 원하는 형식으로 변환
         df = df.sort_values(by='postDate', ascending=False)
 
-        # 권장 방식 (서울 시간 기준으로 오늘 -2일)
-        two_days_ago = pd.Timestamp.today(tz='Asia/Seoul').normalize() - timedelta(days=2)
+        # # 권장 방식 (서울 시간 기준으로 오늘 -2일)
+        # two_days_ago = pd.Timestamp.today(tz='Asia/Seoul').normalize() - timedelta(days=2)
 
-        # 필터링
-        df_filtered = df[df['pubDate'] >= two_days_ago]
+        # # 필터링
+        # df_filtered = df[df['pubDate'] >= two_days_ago]
 
-        return df_filtered
+        return df
 
