@@ -1,9 +1,11 @@
 from huggingface_hub import snapshot_download
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
 
 snapshot_download(
-    repo_id="intfloat/multilingual-e5-small",  # 모델명
+    repo_id="jhgan/ko-sbert-sts",  # 모델명
     ignore_patterns=["*.bin"],
-    local_dir="./safe_model",
+    local_dir="./jhgan_model",
     local_dir_use_symlinks=False
 )
 
