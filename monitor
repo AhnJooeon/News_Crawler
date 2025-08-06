@@ -1,0 +1,66 @@
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+import psutil
+import time
+
+# 설정
+interval_sec = 3         # 측정 주기 (초)
+duration_sec = 60        # 전체 실행 시간 (초)
+total_frames = int(duration_sec / interval_sec)
+
+timestamps = []
+available_mem = []
+python_mem = []
+
+start_time = time.time()
+
+# 그래프 설정
+fig, ax = plt.subplots()
+line1, = ax.plot([], [], label="사용 가능 메모리 (MB)", color="blue", marker="o")
+line2, = ax.plot([], [], label="Python 메모리 (MB)", color="green", marker="s")
+
+# 텍스트 수치 추가
+text_avail = ax.text(0.02, 0.95, "", transform=ax.transAxes, fontsize=10, verticalalignment='top')
+text_python = ax.text(0.02, 0.88, "", transform=ax.transAxes, fontsize=10, verticalalignment='top')
+
+def update(frame):
+    now = time.time() - start_time
+    vm = psutil.virtual_memory()
+    proc = psutil.Process()
+    rss = proc.memory_info().rss / 1024 / 1024  # MB
+
+    # 데이터 저장
+    timestamps.append(now)
+    available_mem.append(vm.available / 1024 / 1024)
+    python_mem.append(rss)
+
+    # 그래프 갱신
+    line1.set_data(timestamps, available_mem)
+    line2.set_data(timestamps, python_mem)
+
+    # 텍스트 갱신
+    text_avail.set_text(f"사용 가능 메모리: {available_mem[-1]:.1f} MB")
+    text_python.set_text(f"Python 메모리: {rss:.1f} MB")
+
+    ax.relim()
+    ax.autoscale_view()
+
+    ax.set_xlabel("시간 (초)")
+    ax.set_ylabel("메모리 (MB)")
+    ax.set_title("실시간 메모리 사용량 추적")
+    ax.legend(loc="upper right")
+    ax.grid(True)
+
+    return line1, line2, text_avail, text_python
+
+# 애니메이션 실행
+ani = animation.FuncAnimation(
+    fig,
+    update,
+    interval=interval_sec * 1000,
+    frames=total_frames,
+    repeat=False
+)
+
+plt.tight_layout()
+plt.show()
