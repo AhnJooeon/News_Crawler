@@ -37,11 +37,12 @@ class RemovePost():
         return df.drop(df.index[list(to_drop)]).reset_index(drop=True)
 
     # STEP 4. Sentence-BERT 기반 의미 중복 제거
-    def remove_duplicates_semantic(self, df, threshold=0.9):
+    def remove_duplicates_semantic(self, df, threshold=0.7):
         print("SentenceTransformer")
         # model = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')  # 기존 모델
         # model = SentenceTransformer('snunlp/KR-SBERT-V40K-klueNLI-augSTS')  # 한국어 모델
-        model = SentenceTransformer("./safe_model", trust_remote_code=True)
+        # model = SentenceTransformer("./safe_model", trust_remote_code=True)  # 다국어 모델
+        model = SentenceTransformer("./jhgan_model", trust_remote_code=True)  # 한국어 모델
 
         texts = df['cleaned_content'].tolist()
         embeddings = model.encode(texts, convert_to_tensor=True)
